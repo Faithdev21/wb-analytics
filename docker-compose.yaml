@@ -7,15 +7,10 @@ volumes:
 services:
   backend:
     build:
-      context: ./backend
+      context: ./backend/wildberries
+      dockerfile: Dockerfile
     env_file:
       - .env
-    command: >
-      sh -c "
-        python manage.py migrate &&
-        python manage.py collectstatic --noinput &&
-        gunicorn core.wsgi:application --bind 0.0.0.0:8000
-      "
     volumes:
       - static:/app/static
       - media:/app/media
@@ -24,6 +19,7 @@ services:
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
     command: cp -r /app/dist /app/result_build
     volumes:
       - ./frontend/result_build:/app/result_build
