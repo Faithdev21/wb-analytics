@@ -13,74 +13,84 @@
 
 ## 📸 Скриншоты
 
+Стартовая страница
+![img.png](templates/screenshots/img1.png)
 
+Страница после загрузки товаров
+
+![img.png](templates/screenshots/img.png)
 ---
 
 ## 🧰 Технологии
 
 **Backend:**
-- Python 3.x
+- Python 3.9
 - Django
 - Django REST Framework (DRF)
 - SQLite
-- Celery + Redis (для парсинга по расписанию, опционально)
-- BeautifulSoup (или Requests/Playwright) для парсинга
 
 **Frontend:**
 - React + MUI
 - Chart.js (react-chartjs-2)
 - Axios
-
-**DevOps:**
-- Docker, docker-compose
-- Swagger/OpenAPI
-- .env
-
 ---
 
 ## ⚙️ Установка и запуск
 
-### 🐳 Быстрый запуск в Docker
+```bash
+1. git clone git@github.com:Faithdev21/wb-analytics.git
+2. cd wb-analytics
+3. touch .env
+```
+4. В файл .env вставить 
+
+```
+DEBUG=False
+DJANGO_SECRET_KEY=django-secret
+VITE_API_BASE_URL=http://localhost:8000/api
+ALLOWED_HOSTS=127.0.0.1,localhost,backend
+```
+5. Установите зависимости из директории backend/:
 
 ```bash
-git clone https://github.com/your-name/wb-analytics.git
-cd wb-analytics
-
-cp .env.example .env
-docker-compose up --build
+python -m venv venv
+```
+```bash
+pip install -r requirements.txt
 ```
 
-После запуска:
+6. Запустить миграции
 
-- 🌐 Frontend: [http://localhost:3000](http://localhost:3000)
-- ⚙️ API: [http://localhost:8000/api/products/](http://localhost:8000/api/products/)
-- 📚 Документация API Swagger: [http://localhost:8000/swagger/](http://localhost:8000/swagger/)
-
----
-
-### 🛠 .env пример:
-
-```env
-DEBUG=1
-
-POSTGRES_DB=wb_analytics
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-
-DJANGO_SECRET_KEY=your_secret_key_here
-DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+```bash
+python manage.py makemigrations
+python manage.py migrate
 ```
 
+7. Выполнить парсинг товаров (Смотрите пункт 📡 Парсинг товаров с Wildberries)  
+
+
+8. Запустить Django приложение из директории backend/wildberries:
+```
+python manage.py runserver
+```
+
+9. Запустить React приложение из директории frontend/
+
+```
+npm run dev
+```
+
+После запуска откройте веб приложение:
+
+- 🌐 WebApp: [http://localhost:5173](http://localhost:5173)
 ---
 
 ## 📡 Парсинг товаров с Wildberries
 
-Вы можете запустить парсинг по ключевому слову:
+Запустить парсинг по ключевому слову из директории backend/wildberries:
 
 ```bash
-docker-compose exec backend python manage.py parse_wildberries "смартфоны"
+python manage.py parse_wb --keyword="КАТЕГОРИЯ ТОВАРА"
 ```
 
 Товары сохраняются в базу данных с полями:
@@ -95,7 +105,7 @@ docker-compose exec backend python manage.py parse_wildberries "смартфон
 
 Фронтенд позволяет:
 
-- Выбрать минимальную цену, рейтинг, количество отзывов
+- Выбрать минимальную цену, рейтинг, количество отзывов (по умолчанию до 100 000 рублей, минимальный рейтинг 0, минимальное количество отзывов 0)
 - Отфильтровать таблицу и обновить данные
 - Построить графики:
   - **Гистограмма по цене**
@@ -115,88 +125,21 @@ GET /api/products/?min_price=1000&min_rating=4.2&min_reviews=50
 
 ```json
 {
-  "id": 102,
-  "name": "Смартфон Samsung Galaxy",
-  "price": 29990,
-  "discount_price": 24990,
-  "rating": 4.6,
-  "review_count": 1240
+    "count": 1493,
+    "next": "http://localhost:8000/api/products/?min_price=1000&min_rating=4.2&min_reviews=50&page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": 919,
+            "wb_id": 34939243,
+            "name": "Пылесос вертикальный для дома DX118C",
+            "price": 3159.0,
+            "discount_price": 2337.0,
+            "rating": 4.8,
+            "review_count": 28769
+        },
+...
+      
 }
 ```
-
 ---
-
-## 📁 Структура проекта
-
-```bash
-.
-├── backend/
-│   ├── manage.py
-│   ├── products/          # Модель товара, сериализаторы, views
-│   ├── parser/            # Скрипт парсера с Wildberries
-│   ├── core/              # Настройки Django
-│   └── ...
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── App.jsx
-│   │   └── ...
-├── docker-compose.yml
-├── .env
-├── Dockerfile
-└── README.md
-```
-
----
-
-## 🧪 Тесты
-
-```bash
-docker-compose exec backend python manage.py test
-```
-
----
-
-## 💬 Контакты
-
-Разработчик: [@your_tg_username](https://t.me/your_tg_username)  
-По вопросам: issues / pull requests welcome!
-
----
-
-## ✅ Планы на будущее
-
-- [ ] 🔄 Автоматический парсинг по расписанию (Celery + Redis)
-- [ ] 📊 Больше графиков: "рейтинги по бренду", "динамика цен"
-- [ ] 📱 Мобильная адаптация
-- [ ] 🔐 Авторизация и дашборды по пользователям
-
----
-
-MIT License
-```
-
----
-
-## 💡 Подсказки
-
-### 1. Сохрани файл как:
-
-```
-📁 корень проекта
-└── README.md
-```
-
-### 2. Создай `.env.example`
-
-Если у тебя есть `.env`, скопируй его и назови `.env.example`, чтобы другие знали, как запустить проект.
-
----
-
-## Хочешь?
-
-- Настрою CI/CD (GitHub Actions)
-- Добавлю поддержку `.env.production` + билд webpack
-- Залью проект на Render / Railway / VPS
-
-✍️ Пиши, и сделаем полный deploy-план!

@@ -8,8 +8,23 @@ export default function Filters({ filters, setFilters }) {
   }
 
   const handleInputChange = (name) => (e) => {
-    setFilters(prev => ({ ...prev, [name]: e.target.value }))
+  let value = e.target.value
+
+  if (value < 0) {
+    value = 0
   }
+
+  if (value === '') {
+      setFilters(prev => ({ ...prev, [name]: '' }));
+      return;
+    }
+
+
+  setFilters((prev) => ({
+    ...prev,
+      [name]: value
+  }))
+  };
 
   return (
     <Box p={2} sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
@@ -42,7 +57,8 @@ export default function Filters({ filters, setFilters }) {
           type="number"
           inputProps={{ step: 0.1, min: 0, max: 5 }}
           value={filters.min_rating || ''}
-          onChange={handleInputChange('min_rating')}
+          onChange={handleInputChange('min_rating', 0, 5)}
+          helperText="Допустимо значение от 0 до 5 с шагом 0.1"
         />
       </Box>
 
@@ -52,7 +68,8 @@ export default function Filters({ filters, setFilters }) {
           type="number"
           inputProps={{ min: 0 }}
           value={filters.min_reviews || ''}
-          onChange={handleInputChange('min_reviews')}
+          onChange={handleInputChange('min_reviews', 0)}
+          helperText="Введите значение больше 0"
         />
       </Box>
 
