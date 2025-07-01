@@ -59,7 +59,7 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-6. Запустить миграции
+6. Запустить миграции из директории backend/wildberries::
 
 ```bash
 python manage.py makemigrations
@@ -74,7 +74,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-9. Запустить React приложение из директории frontend/
+9. Запустить React приложение из директории frontend/:
 
 ```
 npm run dev
