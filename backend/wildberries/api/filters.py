@@ -20,6 +20,12 @@ class ProductFilter(FilterSet):
         errors = {}
 
         try:
+            min_price = float(query_params.get("min_price", 0))
+            if min_price < 0:
+                errors["min_price"] = ["Цена не может быть отрицательной"]
+        except ValueError:
+            errors["min_price"] = ["Некорректное значение цены"]
+        try:
             min_rating = float(query_params.get("min_rating", 0))
             if not (0 <= min_rating <= 5):
                 errors["min_rating"] = ["Рейтинг должен быть от 0 до 5"]
@@ -29,7 +35,7 @@ class ProductFilter(FilterSet):
         try:
             min_reviews = int(query_params.get("min_reviews", 0))
             if min_reviews < 0:
-                errors["min_reviews"] = ["Количество отзывов не может быть < 0"]
+                errors["min_reviews"] = ["Количество отзывов не может быть меньше 0"]
         except ValueError:
             errors["min_reviews"] = ["Некорректное значение числа отзывов"]
 
